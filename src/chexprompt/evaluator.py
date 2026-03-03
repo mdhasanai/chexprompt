@@ -239,16 +239,22 @@ class ReportEvaluator:
         self, formatted_prompt: List[Dict[str, str]]
     ) -> Dict[str, str]:
 
-        return openai.ChatCompletion.create(
-            engine=self.engine,
-            messages=formatted_prompt,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            top_p=self.top_p,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            stop=self.stop,
-        )
+        kwargs = {
+            "messages": formatted_prompt,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "top_p": self.top_p,
+            "frequency_penalty": self.frequency_penalty,
+            "presence_penalty": self.presence_penalty,
+            "stop": self.stop,
+        }
+        
+        if getattr(openai, "api_type", "") in ["azure", "azure_ad", "azuread"]:
+            kwargs["engine"] = self.engine
+        else:
+            kwargs["model"] = self.engine
+
+        return openai.ChatCompletion.create(**kwargs)
 
     async def generate_openai_chat_completion_async(
         self,
@@ -256,17 +262,23 @@ class ReportEvaluator:
         **kwargs,
     ) -> Dict[str, str]:
 
-        return await openai.ChatCompletion.acreate(
-            engine=self.engine,
-            messages=formatted_prompt,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-            top_p=self.top_p,
-            frequency_penalty=self.frequency_penalty,
-            presence_penalty=self.presence_penalty,
-            stop=self.stop,
+        call_kwargs = {
+            "messages": formatted_prompt,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "top_p": self.top_p,
+            "frequency_penalty": self.frequency_penalty,
+            "presence_penalty": self.presence_penalty,
+            "stop": self.stop,
             **kwargs,
-        )
+        }
+        
+        if getattr(openai, "api_type", "") in ["azure", "azure_ad", "azuread"]:
+            call_kwargs["engine"] = self.engine
+        else:
+            call_kwargs["model"] = self.engine
+
+        return await openai.ChatCompletion.acreate(**call_kwargs)
 
     async def _throttled_openai_chat_completion_acreate(
         self,

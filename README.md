@@ -15,6 +15,9 @@ CheXprompt is a novel approach for evaluating radiology reports for chest X-rays
 
 CheXprompt was introduced in [A clinically accessible small multimodal radiology model and evaluation metric for chest X-ray findings](https://doi.org/10.1038/s41467-025-58344-x)
 
+> [!NOTE]
+> **Fork Information**: This is a forked version of CheXprompt that adds support for the standard OpenAI API. The original repository only supported Azure OpenAI. You can now use standard OpenAI API keys with this package.
+
 ## Usage
 ### 1. Install Instructions
 
@@ -26,7 +29,23 @@ pip install -e .
 
 ### 2. Report Evaluation
 
-First, set up your Azure OpenAI configs by providing the necessary API details.
+You can use either the standard OpenAI API or Azure OpenAI.
+
+#### Option A: Standard OpenAI API
+
+Set up your OpenAI API key and choose a model:
+
+```python
+import os
+import openai
+
+openai.api_key = os.environ["OPENAI_API_KEY"]
+engine = "gpt-4-1106-preview"  # Replace with your chosen OpenAI model
+```
+
+#### Option B: Azure OpenAI
+
+Set up your Azure OpenAI configs by providing the necessary API details:
 
 ```python
 import os
